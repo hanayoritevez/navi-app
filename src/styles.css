@@ -1,0 +1,43 @@
+html, body, #root { margin: 0; height: 100%; font-family: system-ui, sans-serif; }
+.map { position: absolute; inset: 0; }
+.navi-canvas { position: absolute; left: 0; top: 0; pointer-events: none; }
+.mk { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; color: #fff; font: 700 13px sans-serif; border: 2px solid #fff; box-sizing: border-box; }
+.mk.cur { background: #16a34a; } .mk.dest { background: #dc2626; } .mk.via { background: #f59e0b; }
+.mk.bpt { background: #2f7bff; width: 20px; height: 20px; margin: 3px; font-size: 11px; }
+.mk.probe { background: #a855f7; } .mk.car { background: #111; font-size: 15px; }
+.panel { position: absolute; z-index: 1000; left: 8px; top: 8px; width: 340px; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px);
+  display: flex; flex-direction: column; background: rgba(20,20,24,.92); color: #eee; border-radius: 10px; font-size: 14px; }
+.panel .head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px; }
+.hint { color: #fcd34d; } .status { color: #93c5fd; } .err { color: #f87171; } .muted { color: #999; }
+.tabs { display: flex; } .tabs button { flex: 1; border-radius: 0; }
+.body { overflow-y: auto; padding: 4px 10px 12px; }
+h4 { margin: 12px 0 6px; font-size: 13px; color: #aaa; }
+button { background: #333; color: #eee; border: 1px solid #555; border-radius: 6px; padding: 7px 10px; font-size: 14px; }
+button.on { background: #2563eb; border-color: #2563eb; } button:disabled { opacity: .4; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 4px 0; }
+.row input[type=number] { width: 90px; } .info { padding-left: 18px; margin: 4px 0; }
+fieldset { border: 1px solid #444; margin: 4px 0; border-radius: 6px; } summary { padding: 4px 0; }
+@media (max-width: 600px) {
+  .panel { left: 0; right: 0; top: auto; bottom: 0; width: 100%; max-width: 100%; max-height: 55vh; border-radius: 12px 12px 0 0; padding-bottom: env(safe-area-inset-bottom); }
+  button, input { font-size: 16px; }
+}
+.slide { margin: 6px 0; } .slide input[type=range] { width: 100%; }
+.slide .row input[type=number] { width: 80px; } .gear { padding: 2px 7px; margin-left: 4px; }
+.row.lim { font-size: 12px; color: #aaa; } .row.lim input { width: 70px; }
+
+.mapbtns { position: absolute; z-index: 1000; right: 8px; top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.stops { list-style: none; padding: 0; margin: 4px 0; } .stops li { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 3px 0; border-bottom: 1px solid #333; }
+.stops li.passed { opacity: .45; text-decoration: line-through; } .stops button { padding: 2px 9px; }
+
+.stopcards { position: absolute; z-index: 1000; top: 8px; right: 8px; width: 180px; max-height: calc(100vh - 90px); display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
+.card { position: relative; flex: 0 0 auto; width: 100%; box-sizing: border-box; padding: 6px 28px 6px 8px; border-radius: 8px;
+  background: rgba(20,20,24,.92); color: #eee; border-left: 4px solid #888; }
+.card.cur { border-color: #16a34a; } .card.via { border-color: #f59e0b; } .card.dest { border-color: #dc2626; }
+.card .ct { font-size: 11px; color: #aaa; } .card .cn { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card .cx { position: absolute; top: 3px; right: 3px; padding: 1px 7px; line-height: 1.2; }
+.card.passed { opacity: .45; }
+@media (max-width: 600px) { .stopcards { width: 150px; max-height: 42vh; } .mapbtns { right: 166px; } }
+
+.mapbtns { right: 196px; }
+@media (max-width: 600px) { .mapbtns { right: 166px; } }
