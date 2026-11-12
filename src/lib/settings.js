@@ -7,7 +7,7 @@ export const DEFAULTS = {
   p1: 500, // B = 経路S上 現在地からP1[m]先
   p2: 300, // 許容追加時間[s]
   road: { routeColor: '#2f7bff', routeWidth: 5, inColor: '#ffffff', inWidth: 2, outColor: '#808080', outWidth: 1.5 },
-  map: { bg: '#000000', tiles: false, tileOpacity: 0.35, headingUp: true },
+  map: { bg: '#000000', tiles: false, tileOpacity: 0.35, headingUp: true, showB: true }, // showB: 開発用のB点を表示するか
   poi: Object.fromEntries(POI_TYPES.map((t) => [t.key, {
     enabled: t.key === 'convenience' || t.key === 'fuel',
     color: t.color, // 種類ごとは色(範囲内)のみ

@@ -151,6 +151,7 @@ export default function MapView({ scene, onClick, apiRef, onDragStart }) {
   const layerRef = useRef(null);
   const tileRef = useRef(null);
   const wasFollow = useRef(false);
+  const stateRef = useRef({ touches: 0, zooming: false, dragging: false, pinched: false, released: false, start: null });
   const sceneRef = useRef(scene);
   const clickRef = useRef(onClick);
   const dragRef = useRef(onDragStart);
@@ -179,9 +180,31 @@ export default function MapView({ scene, onClick, apiRef, onDragStart }) {
       }
       clickRef.current?.({ lat: ll.lat, lon: ll.lng, poi: best });
     });
-    map.on('dragstart', () => dragRef.current?.());
+    // 追従中の縮尺変更: ズーム中は自車への再センタリングを止め、終了後に中心へ戻す。
+    // ピンチ操作(複数指)やわずかな指のズレでは追従を解除しない。
+    const st = stateRef.current;
+    const el = map.getContainer();
+    const onTouch = (e) => { st.touches = e.touches.length; if (st.touches > 1) st.pinched = true; };
+    el.addEventListener('touchstart', onTouch, { passive: true });
+    el.addEventListener('touchmove', onTouch, { passive: true });
+    el.addEventListener('touchend', onTouch, { passive: true });
+    el.addEventListener('touchcancel', onTouch, { passive: true });
+    const recenter = () => {
+      const sc = sceneRef.current;
+      if (sc.follow && sc.pos && !st.zooming && !st.dragging) map.setView(sc.pos, map.getZoom(), { animate: false });
+    };
+    st.recenter = recenter;
+    map.on('zoomstart', () => { st.zooming = true; });
+    map.on('zoomend', () => { st.zooming = false; recenter(); });
+    map.on('dragstart', () => { st.dragging = true; st.released = false; st.pinched = st.touches > 1; st.start = map.getCenter(); });
+    map.on('drag', () => {
+      if (st.released || st.pinched || st.zooming || st.touches > 1 || !st.start) return;
+      const a = map.latLngToContainerPoint(st.start), sz = map.getSize();
+      if (Math.hypot(a.x - sz.x / 2, a.y - sz.y / 2) > 30) { st.released = true; dragRef.current?.(); }
+    });
+    map.on('dragend', () => { st.dragging = false; st.start = null; if (!st.released) recenter(); });
     mapRef.current = map;
-    if (apiRef) apiRef.current = { panTo: (la, lo) => map.panTo([la, lo]), fitBox: (b) => map.fitBounds([[b[0], b[1]], [b[2], b[3]]]), getBox: () => { const b = map.getBounds(); return [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()]; } };
+    if (apiRef) apiRef.current = { zoomBy: (d) => map.setZoom(map.getZoom() + d), panTo: (la, lo) => map.panTo([la, lo]), fitBox: (b) => map.fitBounds([[b[0], b[1]], [b[2], b[3]]]), getBox: () => { const b = map.getBounds(); return [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()]; } };
     return () => map.remove();
   }, []);
 
@@ -200,7 +223,8 @@ export default function MapView({ scene, onClick, apiRef, onDragStart }) {
   // ナビ中は自車を中心に固定(ドラッグ無効)
   useEffect(() => {
     const m = mapRef.current;
-    if (scene.follow && scene.pos) {
+    const st = stateRef.current;
+    if (scene.follow && scene.pos && !st.zooming && !st.dragging) {
       const z = wasFollow.current ? m.getZoom() : Math.max(m.getZoom(), 16);
       m.setView(scene.pos, z, { animate: false });
     }

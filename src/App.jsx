@@ -263,7 +263,7 @@ export default function App() {
   if (pos && progress > 0) markers.push({ lat: pos[0], lon: pos[1], cls: 'car', label: '' });
   vias.forEach((v, i) => markers.push({ ...v, cls: 'via', label: String(i + 1) }));
   if (dest) markers.push({ ...dest, cls: 'dest', label: 'D' });
-  if (rangeOk) markers.push({ lat: rangeOk.B[0], lon: rangeOk.B[1], cls: 'bpt', label: 'B' });
+  if (rangeOk && settings.map.showB) markers.push({ lat: rangeOk.B[0], lon: rangeOk.B[1], cls: 'bpt', label: 'B' });
   if (corner) markers.push({ ...corner, cls: 'probe', label: '□' });
   if (probe) markers.push({ ...probe, cls: 'probe', label: 'C' });
 
@@ -313,6 +313,12 @@ export default function App() {
       )}
       <div className="mapbtns">
         {navigating && !followUser && <button className="on" onClick={() => setFollowUser(true)}>📍 自車に追従</button>}
+        {navigating && (
+          <div className="zoombtns">
+            <button aria-label="拡大" onClick={() => apiRef.current?.zoomBy(1)}>＋</button>
+            <button aria-label="縮小" onClick={() => apiRef.current?.zoomBy(-1)}>－</button>
+          </div>
+        )}
         {navigating && <button onClick={() => setSettings((s) => ({ ...s, map: { ...s.map, headingUp: !s.map.headingUp } }))}>🧭 {settings.map.headingUp ? '進行方向が上' : '北が上'}</button>}
       </div>
       <Panel

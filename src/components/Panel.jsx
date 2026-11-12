@@ -79,10 +79,13 @@ export default function Panel(p) {
                 </div>
                 <div className="btns">
                   {modeBtn('dest', '目的地を設定')}
-                  {modeBtn('via', '経由地を追加')}
+                  {modeBtn('via', '経由地を追加(走行中も可)')}
                   <button onClick={p.resetVias} disabled={!p.vias.length}>経由地リセット</button>
                   <button onClick={p.resetDest} disabled={!p.dest}>目的地リセット</button>
                 </div>
+                <h4>許容範囲 P2</h4>
+                {SL('P2: 許容追加時間 [秒]', st.p2, ['p2'], 'p2', 5)}
+                {p.range && !p.range.error && <p className="muted">許容 T+P2 = {fmtT(p.range.budget)}(走行中に変更すると範囲Rへ即反映)</p>}
                 <h4>計算結果</h4>
                 {p.route ? (
                   <ul className="info">
@@ -111,6 +114,8 @@ export default function Panel(p) {
               <>
                 <h4>パラメータ</h4>
                 {SL('P1: Bまでの距離 [m]', st.p1, ['p1'], 'p1', 10)}
+                <label className="row"><span>B点を表示する</span>
+                  <input type="checkbox" checked={st.map.showB} onChange={(e) => set(['map', 'showB'], e.target.checked)} /></label>
                 <h4>事前取得した地図</h4>
                 <label className="row"><span>地図ファイル</span>
                   <select value={p.prepared?.name || ''} onChange={(e) => { const m = p.maps.find((x) => x.name === e.target.value); p.loadMap(m || null); }}>
@@ -185,14 +190,10 @@ export default function Panel(p) {
             )}
             {tab === 'sim' && (
               <>
-                <h4>余裕時間 P2</h4>
-                {SL('P2: 許容追加時間 [秒]', st.p2, ['p2'], 'p2', 5)}
-                {p.range && !p.range.error && <p className="muted">許容 T+P2 = {fmtT(p.range.budget)}(走行中に変更すると範囲Rへ即反映)</p>}
                 <h4>仮想走行</h4>
                 <p className="muted">現在地から経路Sに沿って車両を動かし、位置に応じて範囲Rを再計算します。</p>
                 {SL(`速度 ×${st.sim.mult}(実速度比)`, st.sim.mult, ['sim', 'mult'], 'simMult', 0.1)}
                 <div className="btns">{[0.5, 1, 2, 5, 10].map((m) => <button key={m} className={st.sim.mult === m ? 'on' : ''} onClick={() => set(['sim', 'mult'], m)}>×{m}</button>)}</div>
-                <div className="btns">{modeBtn('via', '経由地を追加(走行中も可)')}</div>
                 <div className="btns">
                   <button disabled={!p.route} onClick={() => p.setRunning(!p.running)}>{p.running ? '一時停止' : '開始 / 再開'}</button>
                   <button disabled={!p.route} onClick={p.resetSim}>最初に戻す</button>

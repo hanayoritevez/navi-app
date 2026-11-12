@@ -41,3 +41,4 @@ fieldset { border: 1px solid #444; margin: 4px 0; border-radius: 6px; } summary 
 
 .mapbtns { right: 196px; }
 @media (max-width: 600px) { .mapbtns { right: 166px; } }
+.zoombtns { display: flex; gap: 6px; } .zoombtns button { flex: 1; font-size: 20px; padding: 4px 0; min-width: 44px; }
