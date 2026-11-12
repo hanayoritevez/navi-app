@@ -43,7 +43,10 @@ export function parseOsmXml(text, name, level = 'noservice') {
         if (g[i + 1] < w) w = g[i + 1]; if (g[i + 1] > e) e = g[i + 1];
       }
     } else if (ids.length && Object.keys(t).length) {
-      addPoi(t, g[0], g[1]); // 駐車場など面で表される事物は先頭点で代用
+      // 公園・駐車場など面で表される事物は、構成点の平均(おおよその中心)で代用
+      let la = 0, lo = 0;
+      for (let i = 0; i < g.length; i += 2) { la += g[i]; lo += g[i + 1]; }
+      addPoi(t, la / (g.length / 2), lo / (g.length / 2));
     }
   }
   if (!ways.length) throw new Error('取り込める道路が見つかりませんでした');
